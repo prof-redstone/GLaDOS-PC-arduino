@@ -1,46 +1,78 @@
 
 #include <Servo.h>
 #include <FastLED.h>
+#include "Arduino.h"
+#include "ESP8266WiFi.h"
+#include "ESP8266WebServer.h"
+#include "mdp.h"
+
+
 #define NUM_LEDS 5
 
 Servo ServoMotTrans;  // create a servo object
 Servo ServoMotTilt;  // create a servo object
 CRGB leds[NUM_LEDS];
 
-const int servoTransPin = 10; 
-const int servoTiltPin = 9; 
-const int mainLEDPin = 11; 
+const int servoTransPin = 1; 
+const int servoTiltPin = 2; 
+const int mainLEDPin = 3; 
 const int secRLedPin = 8;
 const int secGLedPin = 12;
 const int secBLedPin = 13;
-const int ringLedPin = 7;
+const int ringLedPin = 4;
 
 int mainLedRange[] = {2,60};
 float transMotorRange[] = {10,70};
 float tiltMotorRange[] = {10,50};
 
-long time = 0;
+long timer = 0;
 
 int ringMode = 0;
 int mainLedCount = 0;
 
 
+//objet webserver
+ESP8266WebServer serverWeb(80);
+
+
 void setup() {
-    Serial.begin(9600);
-	FastLED.addLeds<NEOPIXEL, ringLedPin>(leds, NUM_LEDS);
-	ServoMotTrans.attach(servoTransPin); // attaches the servo on pin 9 to the servo object
-	ServoMotTilt.attach(servoTiltPin);
-	pinMode(mainLEDPin, OUTPUT);
-	pinMode(secRLedPin, OUTPUT);
-	pinMode(secGLedPin, OUTPUT);
-	pinMode(secBLedPin, OUTPUT);
+    Serial.begin(115200);
+    Serial.println("bonjour ! ");
+  	FastLED.addLeds<NEOPIXEL, ringLedPin>(leds, NUM_LEDS);
+  	ServoMotTrans.attach(servoTransPin); // attaches the servo on pin 9 to the servo object
+  	ServoMotTilt.attach(servoTiltPin);
+  	pinMode(mainLEDPin, OUTPUT);
+  	pinMode(secRLedPin, OUTPUT);
+  	pinMode(secGLedPin, OUTPUT);
+  	pinMode(secBLedPin, OUTPUT);
+    Serial.println(SSID);
+    
+    IPAddress ip(192,168,1,110);
+    IPAddress gateway(192,168,1,254);
+    IPAddress dns(192,168,1,254);
+    IPAddress subnet(255,255,255,0);
+    WiFi.hostname("GLaDOS");
+    //mode de connection
+    WiFi.mode(WIFI_STA);
+    WiFi.config(ip, gateway, subnet, dns);
+    WiFi.begin(SSID, PASSWORD);
   
+    static WiFiEventHandler onConnectedHandler = WiFi.onStationModeConnected(onConnected);
+    static WiFiEventHandler onGotIPHandler = WiFi.onStationModeGotIP(onGotIP);
+
+    
+    serverWeb.on("/test", test);
+    serverWeb.begin();
 }
 
 void loop() {
+    if (WiFi.isConnected()){
+        serverWeb.handleClient();
+    }
+    
     ring();
-    secLed((time/1000)%4 +1);
-    Serial.println(String((time%1000)/10));
+    secLed((timer/1000)%4 +1);
+    Serial.println(String((timer%1000)/10));
 
     if (mainLedCount == 0){
         mainLedCount = random(30,200);
@@ -53,8 +85,23 @@ void loop() {
     tiltMot(100);
     delay(1000);
 
-    time++;
+    timer++;
 }
+
+void test(){
+    Serial.println("test");  
+}
+
+//connection au wifi
+void onConnected(const WiFiEventStationModeConnected& event){
+    Serial.println("WiFi connected !");
+}
+void onGotIP(const WiFiEventStationModeGotIP& event){
+    Serial.println("Adresse IP : " + WiFi.localIP().toString());
+    Serial.print("Puissance de reception : ");
+    Serial.println(WiFi.RSSI());
+}
+
 
 void ring(){
     float lum = 1.0;
@@ -70,7 +117,7 @@ void ring(){
         for (int i = 0; i < NUM_LEDS; i++){
             leds[i] = CRGB::Black;
         }
-        leds[(time/40)%5] = col;
+        leds[(timer/40)%5] = col;
     }
 
     FastLED.show();
