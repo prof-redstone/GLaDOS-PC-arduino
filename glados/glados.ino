@@ -7,8 +7,8 @@ Servo ServoMotTrans;  // create a servo object
 Servo ServoMotTilt;  // create a servo object
 CRGB leds[NUM_LEDS];
 
-const int servoTransPin = 9; 
-const int servoTiltPin = 10; 
+const int servoTransPin = 10; 
+const int servoTiltPin = 9; 
 const int mainLEDPin = 11; 
 const int secRLedPin = 8;
 const int secGLedPin = 12;
@@ -34,6 +34,7 @@ void setup() {
 	pinMode(secRLedPin, OUTPUT);
 	pinMode(secGLedPin, OUTPUT);
 	pinMode(secBLedPin, OUTPUT);
+  
 }
 
 void loop() {
@@ -47,7 +48,10 @@ void loop() {
     }else mainLedCount--;
     
     //secLed(2);
-    tiltMot((time%1000)/10);
+    tiltMot(0);
+    delay(1000);
+    tiltMot(100);
+    delay(1000);
 
     time++;
 }
