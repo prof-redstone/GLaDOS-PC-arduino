@@ -18,7 +18,7 @@ const int mainLEDPin = 5;
 const int secRLedPin = 4;
 const int secGLedPin = 0;
 const int secBLedPin = 2;
-const int ringLedPin = 4;
+const int ringLedPin = 3;
 
 int mainLedRange[] = {2,60};
 float transMotorRange[] = {10,70};
@@ -76,20 +76,22 @@ void loop() {
             mainLed(random(0,100));
         }else mainLedCount--;
         
-        //secLed(2);
+        secLed(2);
+        delay(10);
+        secLed(2);
+        delay(1000);
+        delay(1000);
         tiltMot(0);
-        //delay(1000);
-        tiltMot(100);
-        //delay(1000);
     
         timer++;
     }else{
-        digitalWrite(secRLedPin, HIGH);
+        secLed(3);
     }
 }
 
 void test(){
     Serial.println("test");  
+    tiltMot(100);
 }
 
 //connection au wifi
