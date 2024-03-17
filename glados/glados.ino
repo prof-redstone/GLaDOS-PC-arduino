@@ -12,17 +12,17 @@ Servo ServoMotTrans;  // create a servo object
 Servo ServoMotTilt;  // create a servo object
 CRGB leds[NUM_LEDS];
 
-const int servoTransPin = 10; 
-const int servoTiltPin = 9; 
+const int servoTransPin = 14; 
+const int servoTiltPin = 12; 
 const int mainLEDPin = 5; 
 const int secRLedPin = 4;
 const int secGLedPin = 0;
 const int secBLedPin = 2;
 const int ringLedPin = 3;
 
-int mainLedRange[] = {2,60};
-float transMotorRange[] = {10,70};
-float tiltMotorRange[] = {10,50};
+int mainLedRange[] = {2,200};
+float transMotorRange[] = {10,140};
+float tiltMotorRange[] = {10,140};
 
 long timer = 0;
 
@@ -46,7 +46,7 @@ void setup() {
   	pinMode(secBLedPin, OUTPUT);
     Serial.println(SSID);
     
-    IPAddress ip(192,168,1,110);
+    IPAddress ip(192,168,1,111);
     IPAddress gateway(192,168,1,254);
     IPAddress dns(192,168,1,254);
     IPAddress subnet(255,255,255,0);
@@ -61,6 +61,8 @@ void setup() {
 
     
     serverWeb.on("/test", test);
+    serverWeb.on("/api", handleAPI);
+    serverWeb.on("/stop", stop);
     serverWeb.begin();
 }
 
@@ -69,19 +71,12 @@ void loop() {
         serverWeb.handleClient();
         
         ring();
-        secLed((timer/1000)%4 +1);
     
         if (mainLedCount == 0){
             mainLedCount = random(30,200);
             mainLed(random(0,100));
         }else mainLedCount--;
         
-        secLed(2);
-        delay(10);
-        secLed(2);
-        delay(1000);
-        delay(1000);
-        tiltMot(0);
     
         timer++;
     }else{
@@ -91,7 +86,51 @@ void loop() {
 
 void test(){
     Serial.println("test");  
-    tiltMot(100);
+    secLed(2);
+}
+
+void stop(){
+    serverWeb.stop();
+    secLed(2);
+}
+
+void handleAPI(){
+    String reponse;
+    if (serverWeb.args() > 0){
+        Serial.println(serverWeb.argName(0));
+        Serial.println(serverWeb.arg(0));
+        if (serverWeb.argName(0) == "SecLed"){
+            Serial.println("changement de secLed ");
+            int rep = serverWeb.arg(0).toInt();
+            secLed(rep);
+        }
+        if (serverWeb.argName(0) == "Tilt"){
+            Serial.println("changement de Tilt ");
+            int rep = serverWeb.arg(0).toInt();
+            if(rep >= 0 && rep <= 100){
+                tiltMot(rep);
+            }
+        }
+        if (serverWeb.argName(0) == "Trans"){
+            Serial.println("changement de Trans ");
+            int rep = serverWeb.arg(0).toInt();
+            if(rep >= 0 && rep <= 100){
+                transMot(rep);
+            }
+        }
+        if (serverWeb.argName(0) == "MainLed"){
+            Serial.println("changement de mainLed ");
+            int rep = serverWeb.arg(0).toInt();
+            if(rep >= 0 && rep <= 100){
+                mainLed(rep);
+            }
+        }
+        
+    }else{
+        reponse = "need arg";
+        serverWeb.send(200, "text/plain", reponse);
+    }
+    
 }
 
 //connection au wifi
@@ -127,12 +166,14 @@ void ring(){
 
 void tiltMot(int ang){
     if(ang < 0 || ang > 100) return;
-    ServoMotTilt.write(((float)ang/100.)*tiltMotorRange[0] + (1 - (float)ang/100.)*tiltMotorRange[1]);
+    float val = ((float)ang/100.)*tiltMotorRange[0] + (1 - (float)ang/100.)*tiltMotorRange[1];
+    ServoMotTilt.write(val);
 }
 
 void transMot(int ang){
     if(ang < 0 || ang > 100) return;
-    ServoMotTrans.write(((float)ang/100.)*transMotorRange[0] + (1 - (float)ang/100.)*transMotorRange[1]);
+    float val = ((float)ang/100.)*transMotorRange[0] + (1 - (float)ang/100.)*transMotorRange[1] ;
+    ServoMotTrans.write(val);
 }
 
 void mainLed(int pow){
