@@ -2,7 +2,6 @@
 #include <Servo.h>
 #include <FastLED.h>
 #include "Arduino.h"
-#include "ESP8266WiFi.h"
 #include "ESP8266WebServer.h"
 #include "mdp.h"
 
@@ -13,12 +12,12 @@ Servo ServoMotTrans;  // create a servo object
 Servo ServoMotTilt;  // create a servo object
 CRGB leds[NUM_LEDS];
 
-const int servoTransPin = 1; 
-const int servoTiltPin = 2; 
-const int mainLEDPin = 3; 
-const int secRLedPin = 8;
-const int secGLedPin = 12;
-const int secBLedPin = 13;
+const int servoTransPin = 10; 
+const int servoTiltPin = 9; 
+const int mainLEDPin = 5; 
+const int secRLedPin = 4;
+const int secGLedPin = 0;
+const int secBLedPin = 2;
 const int ringLedPin = 4;
 
 int mainLedRange[] = {2,60};
@@ -68,24 +67,25 @@ void setup() {
 void loop() {
     if (WiFi.isConnected()){
         serverWeb.handleClient();
+        
+        ring();
+        secLed((timer/1000)%4 +1);
+    
+        if (mainLedCount == 0){
+            mainLedCount = random(30,200);
+            mainLed(random(0,100));
+        }else mainLedCount--;
+        
+        //secLed(2);
+        tiltMot(0);
+        //delay(1000);
+        tiltMot(100);
+        //delay(1000);
+    
+        timer++;
+    }else{
+        digitalWrite(secRLedPin, HIGH);
     }
-    
-    ring();
-    secLed((timer/1000)%4 +1);
-    Serial.println(String((timer%1000)/10));
-
-    if (mainLedCount == 0){
-        mainLedCount = random(30,200);
-        mainLed(random(0,100));
-    }else mainLedCount--;
-    
-    //secLed(2);
-    tiltMot(0);
-    delay(1000);
-    tiltMot(100);
-    delay(1000);
-
-    timer++;
 }
 
 void test(){
