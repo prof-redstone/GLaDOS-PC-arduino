@@ -10,10 +10,12 @@
 
 Servo ServoMotTrans;  // create a servo object
 Servo ServoMotTilt;  // create a servo object
+Servo ServoMotTurn;  // create a servo object
 CRGB leds[NUM_LEDS];
 
 const int servoTransPin = 14; 
 const int servoTiltPin = 12; 
+const int servoTurnPin = 9; //??
 const int mainLEDPin = 5; 
 const int secRLedPin = 4;
 const int secGLedPin = 0;
@@ -40,6 +42,7 @@ void setup() {
   	FastLED.addLeds<NEOPIXEL, ringLedPin>(leds, NUM_LEDS);
   	ServoMotTrans.attach(servoTransPin); // attaches the servo on pin 9 to the servo object
   	ServoMotTilt.attach(servoTiltPin);
+    ServoMotTurn.attach(servoTurnPin);
   	pinMode(mainLEDPin, OUTPUT);
   	pinMode(secRLedPin, OUTPUT);
   	pinMode(secGLedPin, OUTPUT);
