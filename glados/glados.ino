@@ -15,21 +15,24 @@ CRGB leds[NUM_LEDS];
 
 const int servoTransPin = 14; 
 const int servoTiltPin = 12; 
-const int servoTurnPin = 9; //??
-const int mainLEDPin = 5; 
-const int secRLedPin = 4;
+const int servoTurnPin = 4; 
+const int mainLEDPin = 9; 
+const int secRLedPin = 5;
 const int secGLedPin = 0;
 const int secBLedPin = 2;
 const int ringLedPin = 3;
 
-int mainLedRange[] = {2,200};
-float transMotorRange[] = {10,140};
-float tiltMotorRange[] = {10,140};
+int mainLedRange[] = {0,200};
+float transMotorRange[] = {10,180};
+float tiltMotorRange[] = {10,170};
+float turnMotorRange[] = {10,180};
 
 long timer = 0;
 
 int ringMode = 0;
 int mainLedCount = 0;
+int mainLedMode = 0;//0 static light, 1 talk mode
+int ringColor[] = {255,100,0};
 
 
 //objet webserver
@@ -64,6 +67,7 @@ void setup() {
 
     
     serverWeb.on("/test", test);
+    serverWeb.on("/ping", ping);
     serverWeb.on("/api", handleAPI);
     serverWeb.on("/stop", stop);
     serverWeb.begin();
@@ -74,22 +78,30 @@ void loop() {
         serverWeb.handleClient();
         
         ring();
-    
-        if (mainLedCount == 0){
-            mainLedCount = random(30,200);
-            mainLed(random(0,100));
-        }else mainLedCount--;
+
+        if(mainLedMode == 1){
+          if (mainLedCount == 0){
+              mainLedCount = random(30,200);
+              mainLed(random(0,100));
+          }else {
+            mainLedCount--;
+          }
+        }
         
-    
         timer++;
     }else{
-        secLed(3);
+        secLed(3);//attente de connection 
     }
 }
 
 void test(){
     Serial.println("test");  
     secLed(2);
+}
+
+void ping(){
+    Serial.println("ping");  
+    serverWeb.send(200, "text/plain", "pong");
 }
 
 void stop(){
@@ -99,9 +111,11 @@ void stop(){
 
 void handleAPI(){
     String reponse;
+    //http://192.168.1.111/api?Turn=50
     if (serverWeb.args() > 0){
         Serial.println(serverWeb.argName(0));
         Serial.println(serverWeb.arg(0));
+        
         if (serverWeb.argName(0) == "SecLed"){
             Serial.println("changement de secLed ");
             int rep = serverWeb.arg(0).toInt();
@@ -121,11 +135,36 @@ void handleAPI(){
                 transMot(rep);
             }
         }
+        if (serverWeb.argName(0) == "Turn"){
+            Serial.println("changement de Turn ");
+            int rep = serverWeb.arg(0).toInt();
+            if(rep >= 0 && rep <= 100){
+                turnMot(rep);
+            }
+        }
         if (serverWeb.argName(0) == "MainLed"){
             Serial.println("changement de mainLed ");
             int rep = serverWeb.arg(0).toInt();
             if(rep >= 0 && rep <= 100){
-                mainLed(rep);
+              mainLedMode = 0;
+              mainLed(rep);
+            }else if(rep = -1){
+              mainLedMode = 1;
+            }
+        }
+        if (serverWeb.argName(0) == "RingCol"){
+            Serial.println("changement de couleur du ring ");
+            int index = 0;
+            String str = serverWeb.arg(0);
+            while (str.length() > 0 && index < 3) {
+                int commaIndex = str.indexOf('_');
+                if (commaIndex != -1) {
+                ringColor[index] = str.substring(0, commaIndex).toInt();
+                str = str.substring(commaIndex + 1);
+                } else {
+                    ringColor[index] = str.toInt();
+                }
+                index++;
             }
         }
         
@@ -135,6 +174,7 @@ void handleAPI(){
     }
     
 }
+
 
 //connection au wifi
 void onConnected(const WiFiEventStationModeConnected& event){
@@ -149,8 +189,7 @@ void onGotIP(const WiFiEventStationModeGotIP& event){
 
 void ring(){
     float lum = 1.0;
-    CRGB col = CRGB::Yellow;
-    col = CRGB(255*lum,0*lum,0*lum);
+    CRGB col = CRGB(ringColor[0]*lum,ringColor[1]*lum,ringColor[2]*lum);
 
     if(ringMode == 0){
         for (int i = 0; i < NUM_LEDS; i++){
@@ -161,7 +200,6 @@ void ring(){
         for (int i = 0; i < NUM_LEDS; i++){
             leds[i] = CRGB::Black;
         }
-        leds[(timer/40)%5] = col;
     }
 
     FastLED.show();
@@ -169,18 +207,24 @@ void ring(){
 
 void tiltMot(int ang){
     if(ang < 0 || ang > 100) return;
-    float val = ((float)ang/100.)*tiltMotorRange[0] + (1 - (float)ang/100.)*tiltMotorRange[1];
+    float val = ((float)ang/100.)*tiltMotorRange[1] + (1 - (float)ang/100.)*tiltMotorRange[0];
     ServoMotTilt.write(val);
+}
+
+void turnMot(int ang){
+    if(ang < 0 || ang > 100) return;
+    float val = ((float)ang/100.)*turnMotorRange[1] + (1 - (float)ang/100.)*turnMotorRange[0];
+    ServoMotTurn.write(val);
 }
 
 void transMot(int ang){
     if(ang < 0 || ang > 100) return;
-    float val = ((float)ang/100.)*transMotorRange[0] + (1 - (float)ang/100.)*transMotorRange[1] ;
+    float val = ((float)ang/100.)*transMotorRange[1] + (1 - (float)ang/100.)*transMotorRange[0] ;
     ServoMotTrans.write(val);
 }
 
 void mainLed(int pow){
-    int val = (int)(((float)pow/100.)*mainLedRange[0] + (1 - (float)pow/100.)*mainLedRange[1]);
+    int val = (int)(((float)pow/100.)*mainLedRange[1] + (1 - (float)pow/100.)*mainLedRange[0]);
     analogWrite(mainLEDPin, val);
 }
 
