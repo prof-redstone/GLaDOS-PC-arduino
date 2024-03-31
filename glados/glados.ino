@@ -23,9 +23,9 @@ const int secBLedPin = 2;
 const int ringLedPin = 3;
 
 int mainLedRange[] = {0,200};
-float transMotorRange[] = {10,180};
+float transMotorRange[] = {10,170};
 float tiltMotorRange[] = {10,170};
-float turnMotorRange[] = {10,180};
+float turnMotorRange[] = {10,170};
 
 long timer = 0;
 
@@ -33,6 +33,10 @@ int ringMode = 0;
 int mainLedCount = 0;
 int mainLedMode = 0;//0 static light, 1 talk mode
 int ringColor[] = {255,100,0};
+
+float speedTurnMot = 4.;
+float targetTurnMotPos = turnMotorRange[0];
+float currentTurnMotPos = turnMotorRange[0];
 
 
 //objet webserver
@@ -78,6 +82,7 @@ void loop() {
         serverWeb.handleClient();
         
         ring();
+        updateMot();
 
         if(mainLedMode == 1){
           if (mainLedCount == 0){
@@ -186,6 +191,19 @@ void onGotIP(const WiFiEventStationModeGotIP& event){
     Serial.println(WiFi.RSSI());
 }
 
+void updateMot(){
+    float epsilon = 2*speedTurnMot;
+    if(abs(targetTurnMotPos - currentTurnMotPos) > epsilon ){
+        if(targetTurnMotPos - currentTurnMotPos > 0){
+            currentTurnMotPos += speedTurnMot;
+        }else{
+            currentTurnMotPos -= speedTurnMot;
+        }
+    }
+    Serial.println(String(currentTurnMotPos));
+    ServoMotTurn.write(currentTurnMotPos);
+}
+
 
 void ring(){
     float lum = 1.0;
@@ -214,7 +232,8 @@ void tiltMot(int ang){
 void turnMot(int ang){
     if(ang < 0 || ang > 100) return;
     float val = ((float)ang/100.)*turnMotorRange[1] + (1 - (float)ang/100.)*turnMotorRange[0];
-    ServoMotTurn.write(val);
+    targetTurnMotPos = val;
+    //ServoMotTurn.write(val);
 }
 
 void transMot(int ang){
