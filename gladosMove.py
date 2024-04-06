@@ -41,9 +41,20 @@ def RingCol(x):
     if(x == 1):
         send("http://192.168.1.111/api?RingCol=255_0_0")
 
+def off():
+    send("http://192.168.1.111/api?SecLed=0")
+    time.sleep(0.1)
+    send("http://192.168.1.111/api?RingCol=0_0_0")
+    time.sleep(0.1)
+    send("http://192.168.1.111/api?MainLed=0")
+
+def on():
+    awake()
+    time.sleep(0.1)
+    RingCol(0)
+
 def esp8266Online():
     try:
-        start_time = time.time()
         response = requests.get("http://192.168.1.111/ping", timeout=0.5)
         if response.status_code == 200 and response.text.strip() == "pong":
             return True
@@ -51,10 +62,17 @@ def esp8266Online():
             return False
     except requests.exceptions.RequestException as e:
         return False
+    
+def talk():
+    talkLed(x)
+
 
 if __name__ == "__main__":
     print(esp8266Online())
     while True:
+        off()
+        time.sleep(1)
+        on()
         talkLed(1)
         RingCol(0)
         awake()
