@@ -86,7 +86,7 @@ void loop() {
 
         if(mainLedMode == 1){
           if (mainLedCount == 0){
-              mainLedCount = random(30,200);
+              mainLedCount = random(1,30);
               mainLed(random(0,100));
           }else {
             mainLedCount--;
