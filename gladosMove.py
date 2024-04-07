@@ -35,11 +35,8 @@ def talkLed(x):
     if(x == 0 ):
         send("http://192.168.1.111/api?MainLed=0")
 
-def RingCol(x):
-    if(x == 0):
-        send("http://192.168.1.111/api?RingCol=255_100_0")
-    if(x == 1):
-        send("http://192.168.1.111/api?RingCol=255_0_0")
+def RingCol(r,g,b):
+    send(f"http://192.168.1.111/api?RingCol={r}_{g}_{b}")
 
 def off():
     send("http://192.168.1.111/api?SecLed=0")
@@ -49,9 +46,11 @@ def off():
     send("http://192.168.1.111/api?MainLed=0")
 
 def on():
+    RingCol(120,110,90)
+    time.sleep(0.2)
     awake()
-    time.sleep(0.1)
-    RingCol(0)
+    time.sleep(0.2)
+    RingCol(255,100,0)
 
 def esp8266Online():
     try:
@@ -64,17 +63,16 @@ def esp8266Online():
         return False
     
 def talk():
-    talkLed(x)
+    talkLed(1)
 
 
 if __name__ == "__main__":
-    print(esp8266Online())
     while True:
         off()
         time.sleep(1)
         on()
         talkLed(1)
-        RingCol(0)
+        RingCol(255,100,0)
         awake()
         tilt(0)
         time.sleep(0.5)
@@ -88,7 +86,7 @@ if __name__ == "__main__":
         
         turn(100)
         time.sleep(0.5)
-        RingCol(1)
+        RingCol(255,0,0)
         
         tilt(0)
         time.sleep(0.5)
