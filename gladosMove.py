@@ -3,7 +3,7 @@ import time
 
 def send(t):
     try:
-        r = requests.get(t, timeout=0.2)
+        r = requests.get(t, timeout=0.1)
     except :
         pass
 
@@ -20,16 +20,19 @@ def trans(x) :
     if (x<=100 and x >=0):
         send(f"http://192.168.1.111/api?Trans={x}")
 
-def awake():
+def awakeLed():
     send("http://192.168.1.111/api?SecLed=1")
 
-def record():
+def recordLed():
     send("http://192.168.1.111/api?SecLed=2")
 
-def processRecord():
+def processRecordLed():
     send("http://192.168.1.111/api?SecLed=3")
 
-def talkLed(x):
+def talkLed():
+    send("http://192.168.1.111/api?SecLed=4")
+
+def talk(x):
     if(x == 1 ) :
         send("http://192.168.1.111/api?MainLed=-1")
     if(x == 0 ):
@@ -62,8 +65,6 @@ def esp8266Online():
     except requests.exceptions.RequestException as e:
         return False
     
-def talk():
-    talkLed(1)
 
 
 if __name__ == "__main__":
