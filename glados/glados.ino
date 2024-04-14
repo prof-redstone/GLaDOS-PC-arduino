@@ -45,7 +45,7 @@ ESP8266WebServer serverWeb(80);
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("bonjour ! ");
+    Serial.println("GLaDOS ESP8266 ip 192.168.1.111");
   	FastLED.addLeds<NEOPIXEL, ringLedPin>(leds, NUM_LEDS);
   	ServoMotTrans.attach(servoTransPin); // attaches the servo on pin 9 to the servo object
   	ServoMotTilt.attach(servoTiltPin);
@@ -87,7 +87,7 @@ void loop() {
         if(mainLedMode == 1){
           if (mainLedCount == 0){
               mainLedCount = random(1,30);
-              mainLed(random(0,100));
+              mainLed(random(mainLedRange[0],mainLedRange[1]));
           }else {
             mainLedCount--;
           }
