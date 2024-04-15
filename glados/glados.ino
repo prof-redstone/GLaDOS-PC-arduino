@@ -22,10 +22,10 @@ const int secGLedPin = 0;
 const int secBLedPin = 2;
 const int ringLedPin = 3;
 
-int mainLedRange[] = {0,200};
-float transMotorRange[] = {10,170};
-float tiltMotorRange[] = {10,170};
-float turnMotorRange[] = {10,170};
+int mainLedRange[] = {0,230};
+float transMotorRange[] = {0,180};
+float tiltMotorRange[] = {5,175};
+float turnMotorRange[] = {5,175};
 
 long timer = 0;
 
@@ -37,6 +37,11 @@ int ringColor[] = {255,100,0};
 float speedTurnMot = 4.;
 float targetTurnMotPos = turnMotorRange[0];
 float currentTurnMotPos = turnMotorRange[0];
+
+
+float speedTransMot = 9.;
+float targetTransMotPos = transMotorRange[0];
+float currentTransMotPos = transMotorRange[0];
 
 
 //objet webserver
@@ -172,6 +177,11 @@ void handleAPI(){
                 index++;
             }
         }
+        if (serverWeb.argName(0) == "Speed"){
+            float rep = serverWeb.arg(0).toFloat();
+            speedTransMot = rep;
+            
+        }
         
     }else{
         reponse = "need arg";
@@ -200,7 +210,16 @@ void updateMot(){
             currentTurnMotPos -= speedTurnMot;
         }
     }
-    Serial.println(String(currentTurnMotPos));
+    
+    epsilon = 2*speedTransMot;
+    if(abs(targetTransMotPos - currentTransMotPos) > epsilon ){
+        if(targetTransMotPos - currentTransMotPos > 0){
+            currentTransMotPos += speedTransMot;
+        }else{
+            currentTransMotPos -= speedTransMot;
+        }
+    }
+    ServoMotTrans.write(currentTransMotPos);
     ServoMotTurn.write(currentTurnMotPos);
 }
 
@@ -239,7 +258,7 @@ void turnMot(int ang){
 void transMot(int ang){
     if(ang < 0 || ang > 100) return;
     float val = ((float)ang/100.)*transMotorRange[1] + (1 - (float)ang/100.)*transMotorRange[0] ;
-    ServoMotTrans.write(val);
+    targetTransMotPos = val;
 }
 
 void mainLed(int pow){
