@@ -1,11 +1,17 @@
 import requests
 import time
+import threading
 
 def send(t):
-    try:
-        r = requests.get(t, timeout=0.1)
-    except :
-        pass
+    def send_request():
+        try:
+            requests.get(t, timeout=0.2)
+        except Exception as e:
+            pass
+
+    thread = threading.Thread(target=send_request)
+    thread.start()
+
 
 
 def turn(x) :
