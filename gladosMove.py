@@ -2,16 +2,18 @@ import requests
 import time
 import threading
 
+valTilt = 50
+valTrans = 50
+valTurn = 50
+
 def send(t):
-    def send_request():
+    def send_req():
         try:
-            requests.get(t, timeout=0.2)
-        except Exception as e:
+            r = requests.get(t, timeout=0.1)
+        except :
             pass
-
-    thread = threading.Thread(target=send_request)
+    thread = threading.Thread(target=send_req)
     thread.start()
-
 
 
 def turn(x) :
@@ -57,7 +59,7 @@ def off():
 def on():
     RingCol(120,110,90)
     time.sleep(0.2)
-    awake()
+    awakeLed()
     time.sleep(0.2)
     RingCol(255,100,0)
 
@@ -78,16 +80,16 @@ if __name__ == "__main__":
         off()
         time.sleep(1)
         on()
-        talkLed(1)
+        talk(1)
         RingCol(255,100,0)
-        awake()
+        awakeLed()
         tilt(0)
         time.sleep(0.5)
         tilt(100)
         time.sleep(0.5)
         tilt(0)
         time.sleep(0.5)
-        record()
+        recordLed()
         trans(100)
         time.sleep(0.5)
         
@@ -97,7 +99,7 @@ if __name__ == "__main__":
         
         tilt(0)
         time.sleep(0.5)
-        processRecord()
+        processRecordLed()
         tilt(100)
         time.sleep(0.5)
         tilt(0)

@@ -65,7 +65,7 @@ while running:
     z = int(50 + 50*axis_z)
 
     if x != lastx or y != lasty or z != lastz:
-        ecrire_valeurs_fichier(x,y,z,temps_ecoule(),"1.txt")
+        #ecrire_valeurs_fichier(x,y,z,temps_ecoule(),"1.txt")
         time.sleep(0.1)
 
 
