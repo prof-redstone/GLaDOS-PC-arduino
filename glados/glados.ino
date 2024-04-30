@@ -32,7 +32,7 @@ long timer = 0;
 int ringMode = 0;
 int mainLedCount = 0;
 int mainLedMode = 0;//0 static light, 1 talk mode
-int ringColor[] = {255,100,0};
+int ringColor[] = {0,0,0};
 
 float speedTurnMot = 4.;
 float targetTurnMotPos = turnMotorRange[0];
@@ -91,7 +91,7 @@ void loop() {
 
         if(mainLedMode == 1){
           if (mainLedCount == 0){
-              mainLedCount = random(1,30);
+              mainLedCount = random(1,20);
               mainLed(random(mainLedRange[0],mainLedRange[1]));
           }else {
             mainLedCount--;
@@ -101,6 +101,9 @@ void loop() {
         timer++;
     }else{
         secLed(3);//attente de connection 
+        delay(100);
+        secLed(0);
+        delay(100);
     }
 }
 
