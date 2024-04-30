@@ -72,10 +72,8 @@ def esp8266Online():
             return False
     except requests.exceptions.RequestException as e:
         return False
-    
 
-
-if __name__ == "__main__":
+def testMove():
     while True:
         off()
         time.sleep(1)
@@ -109,3 +107,7 @@ if __name__ == "__main__":
         
         turn(0)
         time.sleep(0.5)
+
+
+if __name__ == "__main__":
+    testMove()
