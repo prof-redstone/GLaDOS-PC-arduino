@@ -3,6 +3,12 @@ import pvporcupine
 import struct
 import pyaudio
 
+def listMic():
+    global pa
+    pa = pyaudio.PyAudio()
+    for i in range(pa.get_device_count()):
+        device_info = pa.get_device_info_by_index(i)
+        print(device_info['name'])
 
 def detect_keyword():
     print("\nListening for GLaDOS keyword ...")
@@ -22,7 +28,7 @@ def detect_keyword():
     pa = pyaudio.PyAudio()
     for i in range(pa.get_device_count()):
         device_info = pa.get_device_info_by_index(i)
-        if("Microphone (USB Audio)" == device_info['name']):
+        if("Microphone (Mic-HD Web Ucamera)" == device_info['name']):
             MIC_INDEX = i
             break
     porcupine = None
@@ -54,6 +60,6 @@ def detect_keyword():
 
 if __name__ == "__main__":
     try:
-        detect_keyword()
+        listMic()
     except KeyboardInterrupt:
         pass
