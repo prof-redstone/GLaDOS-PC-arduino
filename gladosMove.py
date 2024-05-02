@@ -28,6 +28,9 @@ def trans(x) :
     if (x<=100 and x >=0):
         send(f"http://192.168.1.111/api?Trans={x}")
 
+def sleepLed():
+    send("http://192.168.1.111/api?SecLed=0")
+
 def awakeLed():
     send("http://192.168.1.111/api?SecLed=1")
 
@@ -58,8 +61,6 @@ def off():
 
 def on():
     RingCol(120,110,90)
-    time.sleep(0.2)
-    awakeLed()
     time.sleep(0.2)
     RingCol(255,100,0)
 
