@@ -9,7 +9,13 @@ def getSpeech():
     recognizer = KaldiRecognizer(model, 16000)
 
     mic = pyaudio.PyAudio()
-    stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
+    MIC_INDEX = 0
+    for i in range(mic.get_device_count()):
+        device_info = mic.get_device_info_by_index(i)
+        if("Microphone (Mic-HD Web Ucamera)" == device_info['name']):
+            MIC_INDEX = i
+            break
+    stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192, input_device_index=MIC_INDEX)
     stream.start_stream()
 
     maxTime = 2 # *5 secondes avant fin

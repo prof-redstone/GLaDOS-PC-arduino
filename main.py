@@ -3,11 +3,27 @@ import time
 import threading
 import gladosMove
 import speechRecog
+import command
 
 
 last_interaction = time.time()
 stopProg = False #stop threading function
 
+
+def MainCoroutine():
+    while not stopProg:
+        if wake_word.detect_keyword() == 1:
+            on()
+            gladosMove.awakeLed()
+            gladosMove.rndMove()
+            speech = speechRecog.getSpeech()
+            gladosMove.sleepLed()
+            gladosMove.rndMove()
+            if speech != "":
+                on()
+                print(speech)
+                command.process_command(speech)
+            
 def on():
     global last_interaction
     last_interaction = time.time()
@@ -23,23 +39,6 @@ def checkInteraction():
     thread = threading.Thread(target=checkInteractionThread)
     thread.start()
 
-def process_command(text):
-    gladosMove.processRecordLed()
-    if "bonjour" in text:
-        print('oui bonjour à toi')
-    print(text)
-
-def MainCoroutine():
-    while not stopProg:
-        if wake_word.detect_keyword() == 1:
-            on()
-            gladosMove.awakeLed()
-            command = speechRecog.getSpeech()
-            gladosMove.sleepLed()
-            if command != "":
-                on()
-                process_command(command.lower())
-            
 
 if __name__ == "__main__":
     try:
