@@ -54,8 +54,8 @@ def talk():
     def talkThread():
         global isTalking
         while isTalking:
-            print("talk")
-            time.sleep(0.5)
+            gladosMove.rndMove()
+            time.sleep(1)
     thread = threading.Thread(target=talkThread)
     thread.start()
 
@@ -63,11 +63,14 @@ def process_command(t):
     gladosMove.processRecordLed()
     t = t.lower()
 
-    if "bonjour" in t:
+    if any(mot in t for mot in ["bonjour", "salut"]):
         play_random_wav("E:\\Utilisateurs\\tom\\Bureau\\GLaDOS proj\\voiceLine\\bonjour")
 
-    if "au revoir" in t:
+    if any(mot in t for mot in ["au revoir", "voir"]):
         play_random_wav("E:\\Utilisateurs\\tom\\Bureau\\GLaDOS proj\\voiceLine\\aurevoir")
+    
+    if any(mot in t for mot in ["ça va"]):
+        play_random_wav("E:\\Utilisateurs\\tom\\Bureau\\GLaDOS proj\\voiceLine\\cava")
     
 
 
