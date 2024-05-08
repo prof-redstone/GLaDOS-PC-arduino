@@ -5,6 +5,7 @@ import pyaudio
 import threading
 import time
 import gladosMove
+import light
 
 device_index = 6
 isTalking = False
@@ -71,6 +72,32 @@ def process_command(t):
     
     if any(mot in t for mot in ["ça va"]):
         play_random_wav("E:\\Utilisateurs\\tom\\Bureau\\GLaDOS proj\\voiceLine\\cava")
+
+    if any(mot in t for mot in ["plafond"]) and any(mot in t for mot in ["allume", "allumé"]):
+        print("Allumage du plafond")
+        light.light_plafond(True)
+
+    if any(mot in t for mot in ["bureau"]) and any(mot in t for mot in ["allume", "allumé"]):
+        print("Allumage du bureau")
+        light.light_bureau(True)
+    
+    if any(mot in t for mot in ["plafond"]) and any(mot in t for mot in ["éteint", "étant", "éteins"]):
+        print("Eteint le plafond")
+        light.light_plafond(False)
+        
+    if any(mot in t for mot in ["bureau"]) and any(mot in t for mot in ["éteint", "étant", "éteins"]):
+        print("Eteint bureau")
+        light.light_bureau(False)
+
+    if any(mot in t for mot in ["lumière"]) and any(mot in t for mot in ["allume", "allumé"]):
+        print("Allumage du plafond et bureau")
+        light.light_plafond(True)
+        light.light_bureau(True)
+
+    if any(mot in t for mot in ["lumière"]) and any(mot in t for mot in ["éteint", "étant", "éteins"]):
+        print("Eteint le plafond et bureau")
+        light.light_plafond(False)
+        light.light_bureau(False)
     
 
 
