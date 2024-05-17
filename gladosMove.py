@@ -10,7 +10,7 @@ valTurn = 50
 def send(t):
     def send_req():
         try:
-            r = requests.get(t, timeout=0.1)
+            r = requests.get(t, timeout=0.2)
         except :
             pass
     thread = threading.Thread(target=send_req)

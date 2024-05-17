@@ -12,18 +12,23 @@ stopProg = False #stop threading function
 
 def MainCoroutine():
     while not stopProg:
-        if wake_word.detect_keyword() == 1:
-            on()
-            gladosMove.awakeLed()
-            gladosMove.rndMove()
-            speech = speechRecog.getSpeech()
-            gladosMove.sleepLed()
-            gladosMove.rndMove()
-            if speech != "":
+        try:
+            if wake_word.detect_keyword() == 1:
                 on()
-                print(speech)
-                command.process_command(speech)
-            
+                gladosMove.awakeLed()
+                gladosMove.rndMove()
+                speech = speechRecog.getSpeech()
+                gladosMove.sleepLed()
+                gladosMove.rndMove()
+                if speech != "":
+                    on()
+                    print(speech)
+                    command.process_command(speech)
+        except Exception as error:
+            print(error)
+            command.play_random_wav("E:\\Utilisateurs\\tom\\Bureau\\GLaDOS proj\\voiceLine\\problème" )
+            gladosMove.off()  
+
 def on():
     global last_interaction
     last_interaction = time.time()

@@ -1,20 +1,26 @@
 import os
 import gladosMove
+import pyaudio
+
+def getInputDevice():
+    mic = pyaudio.PyAudio()
+    for i in range(mic.get_device_count()):
+        device_info = mic.get_device_info_by_index(i)
+        print(device_info['name'])
+        if("Microphone (Mic-HD Web Ucamera)" == device_info['name']):
+            mic.terminate()
+            return i
 
 def getSpeech():
     from vosk import Model, KaldiRecognizer
-    import pyaudio
 
     model = Model(os.path.dirname(os.path.abspath(__file__))+"\speechRecognition\\vosk-model-small-fr-0.22")
     recognizer = KaldiRecognizer(model, 16000)
 
     mic = pyaudio.PyAudio()
-    MIC_INDEX = 0
-    for i in range(mic.get_device_count()):
-        device_info = mic.get_device_info_by_index(i)
-        if("Microphone (Mic-HD Web Ucamera)" == device_info['name']):
-            MIC_INDEX = i
-            break
+    
+    MIC_INDEX = getInputDevice()
+    print("device index for input :", MIC_INDEX)
     stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192, input_device_index=MIC_INDEX)
     stream.start_stream()
 
@@ -37,6 +43,12 @@ def getSpeech():
 
 if __name__ == "__main__":
     try:
-        getSpeech()
+        mic = pyaudio.PyAudio()
+        MIC_INDEX = 0
+        for i in range(mic.get_device_count()):
+            device_info = mic.get_device_info_by_index(i)
+            print(device_info['name'])
+        while True:
+            print(getSpeech())
     except KeyboardInterrupt:
         pass

@@ -28,9 +28,11 @@ def detect_keyword():
     pa = pyaudio.PyAudio()
     for i in range(pa.get_device_count()):
         device_info = pa.get_device_info_by_index(i)
+        print(device_info['name'])
         if("Microphone (Mic-HD Web Ucamera)" == device_info['name']):
             MIC_INDEX = i
             break
+    print("Mic input index for wake word :", MIC_INDEX)
     porcupine = None
     audio_stream = None
     porcupine = pvporcupine.create(
