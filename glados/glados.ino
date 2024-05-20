@@ -24,8 +24,8 @@ const int ringLedPin = 3;
 
 int mainLedRange[] = {0,230};
 float transMotorRange[] = {0,180};
-float tiltMotorRange[] = {5,175};
-float turnMotorRange[] = {5,175};
+float tiltMotorRange[] = {0,180};
+float turnMotorRange[] = {0,180};
 
 long timer = 0;
 
@@ -46,7 +46,7 @@ float currentTransMotPos = transMotorRange[0];
 
 //objet webserver
 ESP8266WebServer serverWeb(80);
-
+bool changeConnectionState = false;
 
 void setup() {
     Serial.begin(115200);
@@ -83,6 +83,14 @@ void setup() {
 }
 
 void loop() {
+    if ((WiFi.isConnected() && !changeConnectionState )|| (!WiFi.isConnected() && changeConnectionState)){
+        changeConnectionState = !changeConnectionState;
+        secLed(3);//attente de connection 
+        delay(100);
+        secLed(0);
+        delay(100);
+    }
+
     if (WiFi.isConnected()){
         serverWeb.handleClient();
         
@@ -100,10 +108,6 @@ void loop() {
         
         timer++;
     }else{
-        secLed(3);//attente de connection 
-        delay(100);
-        secLed(0);
-        delay(100);
     }
 }
 
