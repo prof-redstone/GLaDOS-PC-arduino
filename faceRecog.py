@@ -1,4 +1,5 @@
-
+import gladosMove
+import time
 
 def list_video_devices():
     import win32com.client
@@ -72,16 +73,15 @@ def fastFace(camera_index):
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
     frame_height, frame_width = gray.shape[:2]
 
-    nX = 0.5
-    nY = 0.5
-    results = []
+    nX = -1
+    nY = -1
     for (x, y, w, h) in faces:
         nX = x / frame_width
         nY = y / frame_height
         break
-    print(nX, nY)
+    #print(nX, nY)
 
-    return results
+    return (nX, nY)
 
 
 def main():
@@ -110,8 +110,26 @@ def face():
         print(f"Camera named '{deviceName}' not found.")
         return
     show_window = False 
-    fastFace(camera_index)
+    return fastFace(camera_index)
 
+
+def point2face():
+    (x,y) = face()
+    mapX = [0.33, 0.03]
+    mapY = [0.23, 0.80]
+    ny = (y-mapY[0])/(mapY[1]-mapY[0]) * 100
+    nx = (x-mapX[0])/(mapX[1]-mapX[0]) * 100
+    if x == -1 or y == -1:
+        ny = 50
+        nx = 50
+    nx = min(100, max(0, nx))
+    ny = min(100, max(0, ny))
+    #print(nx, ny)
+    gladosMove.turn(nx)
+    time.sleep(0.1)
+    gladosMove.tilt(ny)
+    time.sleep(0.1)
 
 if __name__ == "__main__":
-    face()
+    while True:
+        point2face()
