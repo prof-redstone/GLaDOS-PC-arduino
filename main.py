@@ -2,7 +2,7 @@ import wake_word
 import time
 import threading
 import gladosMove
-import speechRecog
+import speechRecogFR
 import command
 
 
@@ -17,7 +17,7 @@ def MainCoroutine():
                 on()
                 gladosMove.awakeLed()
                 gladosMove.rndMove()
-                speech = speechRecog.getSpeech()
+                speech = speechRecogFR.getSpeech()
                 gladosMove.sleepLed()
                 gladosMove.rndMove()
                 if speech != "":
@@ -26,7 +26,7 @@ def MainCoroutine():
                     command.process_command(speech)
         except Exception as error:
             print(error)
-            command.play_random_wav("E:\\Utilisateurs\\tom\\Bureau\\GLaDOS proj\\voiceLine\\problème" )
+            #command.play_random_wav("E:\\Utilisateurs\\tom\\Bureau\\GLaDOS proj\\voiceLine\\problème" )
             gladosMove.off()  
 
 def on():
