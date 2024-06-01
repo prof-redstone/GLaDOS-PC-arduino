@@ -37,7 +37,7 @@ def on():
 
 def checkInteraction():
     def checkInteractionThread():
-        maxTimeON = 20
+        maxTimeON = 30
         while not stopProg:
             if time.time() - last_interaction >= maxTimeON:
                 gladosMove.off()

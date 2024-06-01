@@ -1,3 +1,3 @@
 title GLaDOS
-python main.py
+python main.py EN
 pause

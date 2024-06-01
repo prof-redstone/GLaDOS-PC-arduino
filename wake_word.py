@@ -8,7 +8,7 @@ def listMic():
     pa = pyaudio.PyAudio()
     for i in range(pa.get_device_count()):
         device_info = pa.get_device_info_by_index(i)
-        print(device_info['name'])
+        #print(device_info['name'])
 
 def detect_keyword():
     print("\nListening for GLaDOS keyword ...")
@@ -28,7 +28,7 @@ def detect_keyword():
     pa = pyaudio.PyAudio()
     for i in range(pa.get_device_count()):
         device_info = pa.get_device_info_by_index(i)
-        print(device_info['name'])
+        #print(device_info['name'])
         if("Microphone (Mic-HD Web Ucamera)" == device_info['name']):
             MIC_INDEX = i
             break

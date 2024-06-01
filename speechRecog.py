@@ -6,7 +6,7 @@ def getInputDevice():
     mic = pyaudio.PyAudio()
     for i in range(mic.get_device_count()):
         device_info = mic.get_device_info_by_index(i)
-        print(device_info['name'])
+        #print(device_info['name'])
         if("Microphone (Mic-HD Web Ucamera)" == device_info['name']):
             mic.terminate()
             return i
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         MIC_INDEX = 0
         for i in range(mic.get_device_count()):
             device_info = mic.get_device_info_by_index(i)
-            print(device_info['name'])
+            #print(device_info['name'])
         while True:
             print(getSpeech())
     except KeyboardInterrupt:

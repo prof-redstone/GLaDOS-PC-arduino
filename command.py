@@ -138,7 +138,7 @@ def process_command(t, mode = "FR"):
         client.close()
 
         
-        url = 'http://192.168.1.102:8124/synthesize/'+response.lower()
+        url = f'http://{IPTextGeneration}:8124/synthesize/'+response.lower()
         print(url)
         voice = requests.get(url)
         print("get voice ! ")
