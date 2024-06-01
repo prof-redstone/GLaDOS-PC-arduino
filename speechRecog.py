@@ -15,7 +15,7 @@ def getSpeech(mode = "FR"):
     from vosk import Model, KaldiRecognizer
 
     if mode == "FR":
-        model = Model(os.path.dirname(os.path.abspath(__file__))+"\speechRecognition\\vosk-model-small-fr-0.22")
+        model = Model(os.path.dirname(os.path.abspath(__file__))+"\speechRecognition\\vosk-model-small-fr-0.22") 
     if mode == "EN":
         model = Model(os.path.dirname(os.path.abspath(__file__))+"\speechRecognition\\vosk-model-small-en-us-0.15")
     recognizer = KaldiRecognizer(model, 16000)
