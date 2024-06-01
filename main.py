@@ -2,12 +2,13 @@ import wake_word
 import time
 import threading
 import gladosMove
-import speechRecogFR
+import speechRecog
 import command
-
+import sys
 
 last_interaction = time.time()
 stopProg = False #stop threading function
+mode = "FR"
 
 
 def MainCoroutine():
@@ -17,13 +18,13 @@ def MainCoroutine():
                 on()
                 gladosMove.awakeLed()
                 gladosMove.rndMove()
-                speech = speechRecogFR.getSpeech()
+                speech = speechRecog.getSpeech(mode)
                 gladosMove.sleepLed()
                 gladosMove.rndMove()
                 if speech != "":
                     on()
                     print(speech)
-                    command.process_command(speech)
+                    command.process_command(speech, mode)
         except Exception as error:
             print(error)
             #command.play_random_wav("E:\\Utilisateurs\\tom\\Bureau\\GLaDOS proj\\voiceLine\\problème" )
@@ -47,6 +48,9 @@ def checkInteraction():
 
 if __name__ == "__main__":
     try:
+        if len(sys.argv) > 1:
+            argument = sys.argv[1]
+            mode = argument
         checkInteraction()
         MainCoroutine()
     except KeyboardInterrupt:
