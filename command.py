@@ -75,7 +75,7 @@ def talk():
         global isTalking
         while isTalking:
             gladosMove.rndMove()
-            time.sleep(1)
+            time.sleep(random.random()*0.75)
     thread = threading.Thread(target=talkThread)
     thread.start()
 
@@ -126,6 +126,7 @@ def process_command(t, mode = "FR"):
             light.light_bureau(False)
             play_random_wav(voiceLineFolder + "lumièreOff")
     if mode == "EN":
+        print("connection to :", IPTextGeneration)
         import socket
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.connect((IPTextGeneration, 9999))

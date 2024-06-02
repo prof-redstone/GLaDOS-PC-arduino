@@ -1,16 +1,22 @@
 import gladosMove
 import time
+import win32com.client
+
+
+deviceName = "Mic-HD Web Ucamera"
 
 def list_video_devices():
-    import win32com.client
     devices = []
     objSWbemServices = win32com.client.Dispatch("WbemScripting.SWbemLocator")
     objSWbemServices = objSWbemServices.ConnectServer(".", "root\\cimv2")
-    colItems = objSWbemServices.ExecQuery("Select * from Win32_PnPEntity")
-    for objItem in colItems:
-        name = objItem.Name
+    colItems = objSWbemServices.ExecQuery("Select Name from Win32_PnPEntity")
+    
+    device_names = [objItem.Name for objItem in colItems]
+    
+    for name in device_names:
         if name and ("camera" in name.lower() or "video" in name.lower()):
             devices.append(name)
+    
     return devices
 
 def get_camera_index_by_name(name):
@@ -18,6 +24,7 @@ def get_camera_index_by_name(name):
     for idx, device_name in enumerate(devices):
         if name in device_name:
             return idx
+    print("camera not found")
     return None
 
 def analyze_frame(camera_index, show_window=False):
@@ -103,23 +110,25 @@ def main():
     analyze_frame(camera_index, show_window)
 
 
-def face():
-    deviceName = "Mic-HD Web Ucamera"
-    camera_index = get_camera_index_by_name(deviceName)
-    if camera_index is None:
+def face(deviceInd):
+    global deviceName
+    if deviceInd == None:
+        deviceInd = get_camera_index_by_name(deviceName)
+    if deviceInd is None:
         print(f"Camera named '{deviceName}' not found.")
         return
-    show_window = False 
-    return fastFace(camera_index)
+    return fastFace(deviceInd)
 
 
-def point2face():
-    (x,y) = face()
+def point2face(deviceInd = None):
+    print("reco face")
+    (x,y) = face(deviceInd)
     mapX = [0.33, 0.03]
     mapY = [0.23, 0.80]
     ny = (y-mapY[0])/(mapY[1]-mapY[0]) * 100
     nx = (x-mapX[0])/(mapX[1]-mapX[0]) * 100
     if x == -1 or y == -1:
+        return
         ny = 50
         nx = 50
     nx = min(100, max(0, nx))

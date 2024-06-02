@@ -2,6 +2,7 @@ import requests
 import time
 import threading
 import random
+import faceRecog
 
 valTilt = 50
 valTrans = 50
@@ -59,14 +60,12 @@ def off():
     send("http://192.168.1.111/api?RingCol=0_0_0")
     time.sleep(0.1)
     send("http://192.168.1.111/api?MainLed=0")
-    trans(100)
     time.sleep(0.1)
     tilt(50)
     time.sleep(0.1)
     turn(50)
     time.sleep(0.1)
     trans(0)
-    time.sleep(0.1)
 
 def on():
     RingCol(120,110,90)
@@ -85,8 +84,6 @@ def esp8266Online():
     
 
 def rndMove():
-    turn(random.randint(0, 100))
-    tilt(random.randint(0, 100))
     trans(random.randint(0, 100))
 
 def testMove():
