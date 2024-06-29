@@ -12,6 +12,7 @@ import io
 
 device_index = 6
 isTalking = False
+faceRecognition = False #change on the main
 
 IPTextGeneration = "192.168.1.102"
 
@@ -74,12 +75,19 @@ def talk():
     def talkThread():
         global isTalking
         while isTalking:
-            gladosMove.rndMove()
-            time.sleep(random.random()*0.75)
+            if faceRecognition:
+                gladosMove.rndMove()
+                time.sleep(random.random()*0.75)
+            else:
+                gladosMove.trans(random.randint(0, 100))
+                gladosMove.turn(random.randint(0, 100))
+                gladosMove.tilt(random.randint(0, 100))
+                time.sleep(random.random()*0.75)
     thread = threading.Thread(target=talkThread)
     thread.start()
 
 def process_command(t, mode = "FR"):
+    global isTalking
     gladosMove.processRecordLed()
     t = t.lower()
     if mode == "FR":
@@ -155,10 +163,15 @@ def process_command(t, mode = "FR"):
                             output=True,
                             output_device_index=device_index)
             audio_bytes = audio.raw_data
+            isTalking = True
+            print("début")
+            talk()
             stream.write(audio_bytes)
             stream.stop_stream()
             stream.close()
             p.terminate()
+            print("fin")
+            isTalking = False
     
 
 

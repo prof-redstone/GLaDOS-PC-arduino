@@ -12,11 +12,12 @@ last_interaction = time.time()
 stopProg = False #stop threading function
 mode = "FR"
 
-faceRecognition = True
+faceRecognition = False
+command.faceRecognition = faceRecognition
 camera4faceRecog = None
 if faceRecognition:
     camera4faceRecog = faceRecog.get_camera_index_by_name("Mic-HD Web Ucamera")
-faceRecog.point2face(camera4faceRecog)
+    faceRecog.point2face(camera4faceRecog)
 
 def MainCoroutine():
     while not stopProg:
