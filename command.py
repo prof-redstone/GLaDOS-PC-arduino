@@ -17,15 +17,28 @@ faceRecognition = False #change on the main
 IPTextGeneration = "192.168.1.102"
 
 def getOutputDevice():
+    # Lit le nom du périphérique audio enregistré
+    try:
+        with open("configAudioDevice.txt", "r") as f:
+            nom_device_config = f.read().strip()
+    except FileNotFoundError:
+        print("Le fichier configAudioDevice.txt est introuvable. Veuillez exécuter configAudioDevice.py pour configurer le périphérique.")
+        return None
+    
+    # Recherche du périphérique dans les sorties disponibles
     p = pyaudio.PyAudio()
-    deviceIndex = 0
     for i in range(p.get_device_count()):
         info = p.get_device_info_by_index(i)
-        if any(mot in info['name'] for mot in ["T2224zD"]):
-            device_index = i
+        if info['name'] == nom_device_config:
             p.terminate()
-            return device_index
-    print("La sortie audio T2224zD n'a pas etait trouve, verifier le device de sortie, configuration dans le fichier commande.py")
+            return i
+    
+    # Si le périphérique n'est pas trouvé
+    print(f"La sortie audio '{nom_device_config}' n'a pas été trouvée. Vérifiez le périphérique de sortie ou exécutez configAudioDevice.py pour le configurer.")
+    p.terminate()
+    return None
+
+
 
 def play_random_wav(folder_path):
     global isTalking
@@ -176,6 +189,10 @@ def process_command(t, mode = "FR"):
 
 
 if __name__ == "__main__":
-    list_audio_devices()
-    folder_path = "E:\\Utilisateurs\\tom\\Bureau\\GLaDOS proj\\voiceLine\\bonjour"  
-    play_random_wav(folder_path)
+    #list_audio_devices()
+    #folder_path = "E:\\Utilisateurs\\tom\\Bureau\\GLaDOS proj\\voiceLine\\bonjour"  
+    #play_random_wav(folder_path)
+    isTalking = True
+    gladosMove.recordLed()
+    gladosMove.talk(-1)
+    talk()
